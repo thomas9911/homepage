@@ -10,7 +10,13 @@ defmodule MainWeb.Router do
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    # plug :accepts, ["json"]
+    plug Plug.Parsers,
+      parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
+      pass: ["*/*"],
+      json_decoder: Jason
+
+    plug Absinthe.Plug, schema: MainWeb.Schema
   end
 
   scope "/", MainWeb do
@@ -18,6 +24,15 @@ defmodule MainWeb.Router do
 
     get "/", PageController, :index
   end
+
+  scope "/api", MainWeb do
+    pipe_through :api
+  end
+
+  forward "/graphiql",
+          Absinthe.Plug.GraphiQL,
+          schema: MainWeb.Schema,
+          interface: :simple
 
   # Other scopes may use custom stacks.
   # scope "/api", MainWeb do
