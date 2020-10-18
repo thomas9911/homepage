@@ -5,4 +5,10 @@ defmodule MainWeb.Schema.User do
     field :id, :id
     field :name, :string
   end
+
+  object :login do
+    import_fields :user
+
+    field :valid, :boolean
+  end
 end

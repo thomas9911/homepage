@@ -47,7 +47,8 @@ defmodule Main.MixProject do
       {:tesla, "~> 1.3.0"},
       {:mint, "~> 1.0"},
       {:castore, "~> 0.1"},
-      {:uuid, "~> 1.1"}
+      {:uuid, "~> 1.1"},
+      {:argon2_elixir, "~> 2.0"}
     ]
   end
 
@@ -59,7 +60,7 @@ defmodule Main.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get"]
+      # setup: ["deps.get"]
     ]
   end
 end
