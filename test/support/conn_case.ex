@@ -29,8 +29,19 @@ defmodule MainWeb.ConnCase do
       # The default endpoint for testing
       @endpoint MainWeb.Endpoint
 
-      def gql(conn, query, variables \\ %{}) do
+      def gql(conn, query, variables \\ %{}, authorization \\ nil)
+
+      def gql(conn, query, variables, nil) do
         post(conn, "/api", %{
+          "query" => query,
+          "variables" => variables
+        })
+      end
+
+      def gql(conn, query, variables, authorization) do
+        conn
+        |> put_req_header("authorization", "Bearer #{authorization}")
+        |> post("/api", %{
           "query" => query,
           "variables" => variables
         })

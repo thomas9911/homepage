@@ -1,6 +1,10 @@
 defmodule MainWeb.Router do
   use MainWeb, :router
 
+  def absinthe_before_send(conn, _x) do
+    conn
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -10,36 +14,51 @@ defmodule MainWeb.Router do
   end
 
   pipeline :api do
-    # plug :accepts, ["json"]
+    plug :accepts, ["json"]
+
     plug Plug.Parsers,
       parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
       pass: ["*/*"],
       json_decoder: Jason
 
-    plug Guardian.Plug.Pipeline, module: Main.Guardian
-    plug Guardian.Plug.VerifyHeader
-    plug Absinthe.Plug, schema: MainWeb.Schema
+    # plug Guardian.Plug.Pipeline, module: Main.Guardian, otp_app: :main
+    # plug Guardian.Plug.VerifyHeader
+    # plug Guardian.Plug.LoadResource, allow_blank: false
+    # plug Absinthe.Plug, schema: MainWeb.Schema
+    plug Main.Guardian.Pipeline
+    plug MainWeb.Context
   end
 
   scope "/", MainWeb do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/api", PlaygroundController, :index
   end
 
-  scope "/api", MainWeb do
-    pipe_through :api
+  scope "/api" do
+    pipe_through [:api]
+
+    post "/",
+         Absinthe.Plug,
+         schema: MainWeb.Schema,
+         before_send: {__MODULE__, :absinthe_before_send}
   end
 
-  forward "/api",
-          Absinthe.Plug,
-          schema: MainWeb.Schema,
-          interface: :simple
+  # post "/api",
+  #      Absinthe.Plug,
+  #      schema: MainWeb.Schema,
+  #      interface: :simple
 
-  forward "/graphiql",
-          Absinthe.Plug.GraphiQL,
-          schema: MainWeb.Schema,
-          interface: :simple
+  # forward "/api",
+  #         Absinthe.Plug,
+  #         schema: MainWeb.Schema,
+  #         interface: :simple
+
+  # forward "/graphiql",
+  #         Absinthe.Plug.GraphiQL,
+  #         schema: MainWeb.Schema,
+  #         interface: :simple
 
   # Other scopes may use custom stacks.
   # scope "/api", MainWeb do

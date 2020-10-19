@@ -18,10 +18,11 @@ defmodule Main do
     @backend.create_user(name, Argon2.hash_pwd_salt(password))
   end
 
-  defdelegate get_user(id), to: Main.CouchDB
+  defdelegate get_user(id), to: @backend
+  defdelegate get_user_by_name(name), to: @backend
 
   def login(name, password) do
-    case @backend.get_user(name) do
+    case get_user_by_name(name) do
       {:ok, [user]} -> {:ok, check_password(user, password)}
       {:ok, []} -> {:ok, @empty_user}
       e -> e

@@ -18,7 +18,11 @@ defmodule Main.CouchDB do
     end
   end
 
-  def get_user(name) do
+  def get_user(id) do
+    Http.get_data(@user_table, id)
+  end
+
+  def get_user_by_name(name) do
     refetch_user(%{}, name)
   end
 

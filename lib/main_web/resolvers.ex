@@ -1,4 +1,8 @@
 defmodule MainWeb.Resolvers do
+  def not_logged_in_error do
+    {:error, "not logged in"}
+  end
+
   def list_users(_parent, _args, _resolution) do
     {:ok,
      [
@@ -18,8 +22,12 @@ defmodule MainWeb.Resolvers do
     |> convert_to_atoms()
   end
 
-  def create_user(_, %{name: name, password: password}, _) do
+  def create_user(_, %{name: name, password: password}, %{context: %{logged_in?: true}}) do
     Main.new_user(name, password) |> convert_to_atoms()
+  end
+
+  def create_user(_, _, _) do
+    not_logged_in_error()
   end
 
   def login(_, %{name: name, password: password}, _) do

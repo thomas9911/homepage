@@ -1,6 +1,6 @@
 defmodule MainWeb.Schema do
   use Absinthe.Schema
-  import_types(MainWeb.Schema.User)
+  import_types MainWeb.Schema.User
 
   alias MainWeb.Resolvers
 

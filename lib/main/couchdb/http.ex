@@ -40,17 +40,35 @@ defmodule Main.CouchDB.Http do
          {:ok, env} <-
            post("/:database", put_id(data), opts: [path_params: [database: database]]),
          {:ok, %{id: id, rev: rev}} <- extract_id_and_rev(env),
-         {:ok, env} <- get_data(database, id, rev),
-         {:ok, data} <- extract_body(env) do
-      {:ok, %Context{data: data, id: id, rev: rev}}
+         {:ok, ctx} <- get_data(database, id, rev) do
+      {:ok, ctx}
     else
       {:error, %Tesla.Env{body: body}} -> {:error, body}
       {:error, error} -> {:error, error}
     end
   end
 
-  def get_data(database, id, rev) do
-    get("/:database/:id", query: [rev: rev], opts: [path_params: [database: database, id: id]])
+  def get_data(database, id, rev \\ nil) do
+    req_opts = [
+      opts: [path_params: [database: database, id: id]]
+    ]
+
+    req_opts =
+      unless is_nil(rev) do
+        Keyword.put(req_opts, :query, rev: rev)
+      else
+        req_opts
+      end
+
+    with {:ok, _database} <- validate_input(database),
+         {:ok, _id} <- validate_input(id),
+         {:ok, env} <- get("/:database/:id", req_opts),
+         {:ok, data} <- extract_body(env) do
+      {:ok, %Context{data: data, id: id, rev: rev}}
+    else
+      {:error, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, error} -> {:error, error}
+    end
   end
 
   def get_count(database, design, view, key) do

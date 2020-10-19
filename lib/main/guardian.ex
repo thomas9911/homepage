@@ -6,6 +6,9 @@ defmodule Main.Guardian do
   end
 
   def resource_from_claims(%{"sub" => id}) do
-    Main.get_user(id)
+    case Main.get_user(id) do
+      {:ok, %{data: data}} -> {:ok, data}
+      e -> e
+    end
   end
 end

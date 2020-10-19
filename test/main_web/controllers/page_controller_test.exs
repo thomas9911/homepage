@@ -22,8 +22,6 @@ defmodule MainWeb.PageControllerTest do
 
     conn = gql(conn, query, %{name: "admin", password: "password"})
 
-    # IO.inspect(conn)
-
     assert {:ok,
             %{
               "data" => %{
@@ -34,5 +32,48 @@ defmodule MainWeb.PageControllerTest do
                 }
               }
             }} = Jason.decode(conn.resp_body)
+  end
+
+  describe "createUser" do
+    @query """
+    mutation newUser($name: String!, $password: String!) {
+      createUser(name: $name, password: $password) {
+        id
+        name
+      }
+    }
+    """
+
+    setup do
+      {:ok, [user]} = Main.get_user_by_name("admin")
+      {:ok, token, _full_claims} = Main.Guardian.encode_and_sign(user)
+      %{token: token}
+    end
+
+    test "valid", %{conn: conn, token: token} do
+      conn = gql(conn, @query, %{name: "admin", password: "password"}, token)
+
+      assert {:ok,
+              %{
+                "data" => %{
+                  "createUser" => %{
+                    "name" => "admin"
+                  }
+                }
+              }} = Jason.decode(conn.resp_body)
+    end
+
+    test "invalid", %{conn: conn} do
+      conn = gql(conn, @query, %{name: "admin", password: "password"})
+
+      assert {:ok,
+              %{
+                "errors" => [
+                  %{
+                    "message" => "not logged in"
+                  }
+                ]
+              }} = Jason.decode(conn.resp_body)
+    end
   end
 end
