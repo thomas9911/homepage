@@ -8,8 +8,8 @@ defmodule Main.CouchDB do
 
   def create_user(name, password) do
     with {:ok, ctx} <- Http.post_data(@user_table, %{"name" => name, "password" => password}),
-         {:ok, unique} <- check_user_uniqueness(name) |> IO.inspect(label: "unique"),
-         :ok <- delete_exists(ctx, unique) |> IO.inspect(label: "delete"),
+         {:ok, unique} <- check_user_uniqueness(name),
+         :ok <- delete_exists(ctx, unique),
          {:ok, [data]} <- refetch_user(ctx.data, name, unique) do
       {:ok, data}
     else
@@ -23,7 +23,7 @@ defmodule Main.CouchDB do
   end
 
   defp delete_exists(%Context{id: id, rev: rev}, false) do
-    case delete_user(id, rev) |> IO.inspect() do
+    case delete_user(id, rev) do
       {:ok, _env} -> :ok
       e -> e
     end

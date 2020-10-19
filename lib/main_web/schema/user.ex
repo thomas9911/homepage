@@ -10,5 +10,6 @@ defmodule MainWeb.Schema.User do
     import_fields :user
 
     field :valid, :boolean
+    field :jwt, :string
   end
 end

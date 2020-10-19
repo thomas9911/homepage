@@ -8,3 +8,7 @@ config :main, MainWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :main, Main.CouchDB.Setup,
+  admin_user: "admin",
+  admin_password: "password"

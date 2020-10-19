@@ -28,6 +28,14 @@ config :main, Main.CouchDB,
   user: "user",
   password: "password"
 
+config :main, Main.CouchDB.Setup,
+  admin_user: "admin",
+  admin_password: "password"
+
+config :main, Main.Guardian,
+  issuer: "guardian",
+  secret_key: "CNgADZHEyWro3WZCaBISlIpUJF6c/1GpNL18aM+iiMbKhXLv2Z8CyixEcgcr3+oG"
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 

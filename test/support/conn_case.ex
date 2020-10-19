@@ -28,6 +28,13 @@ defmodule MainWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint MainWeb.Endpoint
+
+      def gql(conn, query, variables \\ %{}) do
+        post(conn, "/api", %{
+          "query" => query,
+          "variables" => variables
+        })
+      end
     end
   end
 

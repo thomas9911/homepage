@@ -16,6 +16,8 @@ defmodule MainWeb.Router do
       pass: ["*/*"],
       json_decoder: Jason
 
+    plug Guardian.Plug.Pipeline, module: Main.Guardian
+    plug Guardian.Plug.VerifyHeader
     plug Absinthe.Plug, schema: MainWeb.Schema
   end
 
@@ -28,6 +30,11 @@ defmodule MainWeb.Router do
   scope "/api", MainWeb do
     pipe_through :api
   end
+
+  forward "/api",
+          Absinthe.Plug,
+          schema: MainWeb.Schema,
+          interface: :simple
 
   forward "/graphiql",
           Absinthe.Plug.GraphiQL,

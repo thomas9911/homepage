@@ -18,17 +18,24 @@ defmodule Main.CouchDB.Http do
     end
   end
 
+  def create_database(database) do
+    case validate_input(database) do
+      {:ok, database} -> put("/:database", %{}, opts: [path_params: [database: database]])
+      e -> e
+    end
+  end
+
+  def delete_database(database) do
+    case validate_input(database) do
+      {:ok, database} -> delete("/:database", opts: [path_params: [database: database]])
+      e -> e
+    end
+  end
+
   @doc """
   Create a new document in the given database
   """
   def post_data(database, data) when is_map(data) do
-    # case validate_input(database) do
-    #   {:ok, database} ->
-    #     post("/:database", put_id(data), opts: [path_params: [database: database]]) |> IO.inspect
-
-    #   e ->
-    #     e
-    # end
     with {:ok, database} <- validate_input(database),
          {:ok, env} <-
            post("/:database", put_id(data), opts: [path_params: [database: database]]),

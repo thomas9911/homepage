@@ -48,6 +48,7 @@ defmodule Main.MixProject do
       {:mint, "~> 1.0"},
       {:castore, "~> 0.1"},
       {:uuid, "~> 1.1"},
+      {:guardian, "~> 2.0"},
       {:argon2_elixir, "~> 2.0"}
     ]
   end
