@@ -2,6 +2,7 @@ defmodule Main.CouchDB.Setup.Up do
   @moduledoc """
   Contains code to setup the Couchdb database
   """
+  import Main.CouchDB.Setup
 
   alias Main.CouchDB.Http
 
@@ -27,16 +28,19 @@ defmodule Main.CouchDB.Setup.Up do
   end
 
   def create_user_database do
-    Http.create_database(@user_url)
+    print("create user database")
+    print_success(Http.create_database(@user_url))
   end
 
   def create_user_design do
-    Http.put(@user_design_url, @user_design)
+    print("create user design")
+    print_success(Http.put(@user_design_url, @user_design))
   end
 
   def create_admin_user do
+    print("create admin user")
     %{user: user, password: password} = admin_user_config()
-    Main.new_user(user, password)
+    print_success(Main.new_user(user, password))
   end
 
   defp admin_user_config() do

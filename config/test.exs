@@ -11,4 +11,10 @@ config :logger, level: :warn
 
 config :main, Main.CouchDB.Setup,
   admin_user: "admin",
-  admin_password: "password"
+  admin_password: "password",
+  log_level: :warn
+
+config :main, Main.CouchDB,
+  url: "http://192.168.99.100:5985",
+  user: "user",
+  password: "password"

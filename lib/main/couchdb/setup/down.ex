@@ -2,6 +2,7 @@ defmodule Main.CouchDB.Setup.Down do
   @moduledoc """
   Contains code to drop the Couchdb database
   """
+  import Main.CouchDB.Setup
 
   alias Main.CouchDB.Http
 
@@ -14,6 +15,7 @@ defmodule Main.CouchDB.Setup.Down do
   end
 
   def drop_user_database do
-    Http.delete_database(@user_url)
+    print("delete user database")
+    print_success(Http.delete_database(@user_url))
   end
 end

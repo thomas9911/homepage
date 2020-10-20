@@ -36,3 +36,10 @@ services:
     - COUCHDB_PASSWORD=password
     ports:
     - 5984:5984
+  couchdb_test:
+    image: couchdb
+    environment:
+    - COUCHDB_USER=user
+    - COUCHDB_PASSWORD=password
+    ports:
+    - 5985:5984

@@ -62,6 +62,7 @@ defmodule Main.MixProject do
   defp aliases do
     [
       # setup: ["deps.get"]
+      test: ["setup", "test", "drop"]
     ]
   end
 end

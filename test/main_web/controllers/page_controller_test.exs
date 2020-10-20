@@ -2,6 +2,15 @@ defmodule MainWeb.PageControllerTest do
   use MainWeb.ConnCase
 
   # alias MainWeb.TestHelpers
+  setup_all do
+    with {:ok, [user]} <- Main.get_user_by_name("admin"),
+         {:ok, token, _full_claims} <- Main.Guardian.encode_and_sign(user) do
+      {:ok, %{token: token}}
+    else
+      {:ok, []} -> {:error, "admin user not found"}
+      e -> e
+    end
+  end
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
@@ -43,12 +52,6 @@ defmodule MainWeb.PageControllerTest do
       }
     }
     """
-
-    setup do
-      {:ok, [user]} = Main.get_user_by_name("admin")
-      {:ok, token, _full_claims} = Main.Guardian.encode_and_sign(user)
-      %{token: token}
-    end
 
     test "valid", %{conn: conn, token: token} do
       conn = gql(conn, @query, %{name: "admin", password: "password"}, token)
