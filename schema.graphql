@@ -1,0 +1,28 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+}
+
+type User {
+  id: ID
+  name: String
+}
+
+type Login {
+  id: ID
+  name: String
+  valid: Boolean
+  jwt: String
+}
+
+type RootMutationType {
+  "Create a user"
+  createUser(name: String!, password: String!): User
+}
+
+type RootQueryType {
+  "Get all users"
+  users: [User]
+
+  login(name: String!, password: String!): Login
+}
