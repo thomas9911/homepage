@@ -62,7 +62,12 @@ defmodule Main.MixProject do
   defp aliases do
     [
       # setup: ["deps.get"]
-      test: ["setup", "test", "drop"]
+      test: ["setup", "test", "drop"],
+      graphql: [
+        "absinthe.schema.sdl --schema MainWeb.Schema",
+        "cmd yarn tsgql typegen",
+        "cmd yarn tsgql report --includeFragments"
+      ]
     ]
   end
 end
