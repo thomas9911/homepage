@@ -29,11 +29,20 @@ defmodule MainWeb.Router do
     plug MainWeb.Context
   end
 
+  if Mix.env() in [:dev, :test] do
+    import Phoenix.LiveDashboard.Router
+
+    scope "/" do
+      pipe_through :browser
+      live_dashboard "/dashboard", metrics: MainWeb.Telemetry
+    end
+  end
+
   scope "/", MainWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
     get "/api", PlaygroundController, :index
+    get "/*page", PageController, :index
   end
 
   scope "/api" do
@@ -72,12 +81,4 @@ defmodule MainWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
-
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: MainWeb.Telemetry
-    end
-  end
 end
