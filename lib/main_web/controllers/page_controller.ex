@@ -2,17 +2,28 @@ defmodule MainWeb.PageController do
   use MainWeb, :controller
 
   # @priv_dir :code.priv_dir(:main) |> to_string()
-  @priv_dir "./priv/static/"
+  @priv_dir "./priv/static"
 
   def index(conn, params) do
-    # render(conn, "index.html")
-    # send_file(conn, "index.html")
-    # put_layout(conn, false)
+    file = file_path(params)
 
-    # IO.inspect(params)
+    send_download(conn, {:file, file}, disposition: :inline)
+  rescue
+    File.Error ->
+      conn
+      |> put_status(:not_found)
+      |> put_view(MainWeb.ErrorView)
+      |> render(:"404")
+  end
+
+  defp file_path(params) do
     arg = params |> Map.get("page", []) |> path_join()
 
-    send_download(conn, {:file, @priv_dir <> arg <> "/index.html"}, disposition: :inline)
+    Path.join([
+      @priv_dir,
+      arg,
+      "index.html"
+    ])
   end
 
   defp path_join([]), do: ""

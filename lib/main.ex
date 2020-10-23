@@ -11,7 +11,8 @@ defmodule Main do
 
   @empty_user %{
     valid: false,
-    jwt: nil
+    jwt: nil,
+    expires_at: nil
   }
 
   def new_user(name, password) do
@@ -33,11 +34,12 @@ defmodule Main do
     valid = Argon2.verify_pass(password, stored_password)
 
     if valid do
-      {:ok, token, _full_claims} = Main.Guardian.encode_and_sign(user)
+      {:ok, token, %{"exp" => exp}} = Main.Guardian.encode_and_sign(user)
 
       user
       |> Map.put(:valid, valid)
       |> Map.put(:jwt, token)
+      |> Map.put(:expires_at, exp |> DateTime.from_unix!() |> DateTime.to_iso8601())
     else
       @empty_user
     end

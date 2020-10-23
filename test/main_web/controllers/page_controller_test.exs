@@ -12,10 +12,10 @@ defmodule MainWeb.PageControllerTest do
     end
   end
 
-  test "GET /", %{conn: conn} do
-    conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Welcome to Phoenix!"
-  end
+  # test "GET /", %{conn: conn} do
+  #   conn = get(conn, "/")
+  #   assert html_response(conn, 200) =~ "Welcome to Phoenix!"
+  # end
 
   test "login with admin", %{conn: conn} do
     query = """

@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 // import logo from "./logo.svg";
 // import "./App.css";
 import { usersQuery } from "./query";
 import { client } from "./client";
 import { ApolloProvider } from "@apollo/client";
-import { Box, BoxProps, Button, Heading } from "grommet";
+import { Box, BoxProps, Button } from "grommet";
 import {
   Notification,
   Home as HomeIcon,
   VmMaintenance,
   GraphQl as GraphQlIcon,
 } from "grommet-icons";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect,
+} from "react-router-dom";
 import { Routes } from "./routes";
+import { AuthContext, AuthStore, sessionAuthContext } from "./store";
+import { LoginPage } from "./Login";
 
 // const InnerApp = (): JSX.Element => {
 //   return (
@@ -34,6 +42,42 @@ import { Routes } from "./routes";
 //     </div>
 //   );
 // };
+
+// const LoginPage = (): JSX.Element => {
+//   return <div>
+
+//   </div>
+// }
+
+const PrivateRoute = ({ children, ...rest }: Record<string, any>) => {
+  const { store } = useContext(AuthContext);
+
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        store.isValid() ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: Routes.Login,
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  );
+};
+
+const AdminPage = (): JSX.Element => {
+  // const { store } = useContext(AuthContext);
+
+  // // return <Link to={Routes.Login}>XDXDXD</Link>
+  // return  <Redirect from={Routes.Admin} to={Routes.Login} />
+  return <div>XDXD</div>;
+};
 
 const AppBox = (
   props: JSX.IntrinsicAttributes &
@@ -81,6 +125,13 @@ const MainSwitch = (): JSX.Element => {
   <Route path="/users">
     <Users />
   </Route> */}
+
+      <PrivateRoute path={Routes.Admin}>
+        <AdminPage />
+      </PrivateRoute>
+      <Route path={Routes.Login}>
+        <LoginPage />
+      </Route>
       <Route path={Routes.Home}>
         <Home />
       </Route>
@@ -95,20 +146,49 @@ const MainSwitch = (): JSX.Element => {
   );
 };
 
+const InnerApp = (): JSX.Element => {
+  const { store } = useContext(AuthContext);
+
+  console.log(store);
+  console.log(store.isEmpty());
+
+  return <AuthedApp />;
+};
+
+// const UnAuthedApp = (): JSX.Element => {
+//   console.log("unauthed");
+//   return (
+//     <ApolloProvider client={client()}>
+//       <MainSwitch />
+//     </ApolloProvider>
+//   );
+// };
+
+const AuthedApp = (): JSX.Element => {
+  let { store } = useContext(AuthContext);
+  return (
+    <ApolloProvider client={client(store.token)}>
+      <MainSwitch />
+    </ApolloProvider>
+  );
+};
+
 const App = (): JSX.Element => {
   // client
   //   .query({
   //     query: usersQuery,
   //   })
   //   .then((result) => console.log(result));
+  const [store, updateStore] = useState(sessionAuthContext());
+  // const [store, updateStore] = useState(new AuthStore());
 
   return (
-    <ApolloProvider client={client}>
+    <AuthContext.Provider value={{ store, updateStore }}>
       <Router forceRefresh={true}>
         {/* <Home /> */}
-        <MainSwitch />
+        <InnerApp />
       </Router>
-    </ApolloProvider>
+    </AuthContext.Provider>
   );
 };
 

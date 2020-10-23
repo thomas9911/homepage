@@ -13,16 +13,17 @@ type Login {
   name: String
   valid: Boolean
   jwt: String
+  expiresAt: String
 }
 
 type RootMutationType {
   "Create a user"
   createUser(name: String!, password: String!): User
+
+  login(name: String!, password: String!): Login
 }
 
 type RootQueryType {
   "Get all users"
   users: [User]
-
-  login(name: String!, password: String!): Login
 }

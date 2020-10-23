@@ -38,6 +38,7 @@ config :main, MainWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
+
 config :main, MainWeb.Endpoint,
   live_reload: [
     patterns: [

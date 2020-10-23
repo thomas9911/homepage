@@ -11,5 +11,6 @@ defmodule MainWeb.Schema.User do
 
     field :valid, :boolean
     field :jwt, :string
+    field :expires_at, :string
   end
 end

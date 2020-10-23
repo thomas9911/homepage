@@ -44,6 +44,7 @@ defmodule Main.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:absinthe, "~> 1.5.0"},
       {:absinthe_plug, "~> 1.5.0"},
+      {:cors_plug, "~> 1.5"},
       {:tesla, "~> 1.3.0"},
       {:mint, "~> 1.0"},
       {:castore, "~> 0.1"},
