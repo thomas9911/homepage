@@ -1,12 +1,12 @@
 import {
   ApolloClient,
   InMemoryCache,
-  ApolloClientOptions,
+  NormalizedCacheObject,
 } from "@apollo/client";
 
 import { url } from "./config.json";
 
-export const client = (token?: string): ApolloClient<any> => {
+export const client = (token?: string): ApolloClient<NormalizedCacheObject> => {
   const headers: Record<string, string> | undefined = token
     ? { authorization: token }
     : undefined;

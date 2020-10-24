@@ -1,7 +1,5 @@
-import React, { useContext, useState } from "react";
-// import logo from "./logo.svg";
-// import "./App.css";
-import { usersQuery } from "./query";
+import React, { useState } from "react";
+// import { usersQuery } from "./query";
 import { client } from "./client";
 import { ApolloProvider } from "@apollo/client";
 import { Box, BoxProps, Button } from "grommet";
@@ -19,7 +17,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { Routes } from "./routes";
-import { AuthContext, AuthStore, sessionAuthContext } from "./store";
+import { AuthContext, sessionAuthContext, useAuthContext } from "./store";
 import { LoginPage } from "./Login";
 
 // const InnerApp = (): JSX.Element => {
@@ -49,17 +47,21 @@ import { LoginPage } from "./Login";
 //   </div>
 // }
 
-const PrivateRoute = ({ children, ...rest }: Record<string, any>) => {
-  const { store } = useContext(AuthContext);
+const PrivateRoute = ({
+  children,
+  ...rest
+}: Record<string, any>): JSX.Element => {
+  const { store } = useAuthContext();
 
   return (
     <Route
       {...rest}
-      render={({ location }) =>
+      render={({ location }): JSX.Element =>
         store.isValid() ? (
           children
         ) : (
           <Redirect
+            push
             to={{
               pathname: Routes.Login,
               state: { from: location },
@@ -72,7 +74,7 @@ const PrivateRoute = ({ children, ...rest }: Record<string, any>) => {
 };
 
 const AdminPage = (): JSX.Element => {
-  // const { store } = useContext(AuthContext);
+  // const { store } = useAuthContext;
 
   // // return <Link to={Routes.Login}>XDXDXD</Link>
   // return  <Redirect from={Routes.Admin} to={Routes.Login} />
@@ -116,7 +118,7 @@ const Home = (): JSX.Element => {
   );
 };
 
-const MainSwitch = (): JSX.Element => {
+const MainSwitch = (props: any): JSX.Element => {
   return (
     <Switch>
       {/* <Route path="/about">
@@ -146,14 +148,9 @@ const MainSwitch = (): JSX.Element => {
   );
 };
 
-const InnerApp = (): JSX.Element => {
-  const { store } = useContext(AuthContext);
-
-  console.log(store);
-  console.log(store.isEmpty());
-
-  return <AuthedApp />;
-};
+// const InnerApp = (): JSX.Element => {
+//   return <AuthedApp />;
+// };
 
 // const UnAuthedApp = (): JSX.Element => {
 //   console.log("unauthed");
@@ -165,7 +162,7 @@ const InnerApp = (): JSX.Element => {
 // };
 
 const AuthedApp = (): JSX.Element => {
-  let { store } = useContext(AuthContext);
+  const { store } = useAuthContext();
   return (
     <ApolloProvider client={client(store.token)}>
       <MainSwitch />
@@ -186,7 +183,7 @@ const App = (): JSX.Element => {
     <AuthContext.Provider value={{ store, updateStore }}>
       <Router forceRefresh={true}>
         {/* <Home /> */}
-        <InnerApp />
+        <AuthedApp />
       </Router>
     </AuthContext.Provider>
   );

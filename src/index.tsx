@@ -4,7 +4,8 @@ import { hydrate, render } from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { Grommet } from "grommet";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const theme = {
   global: {
     colors: {
@@ -30,6 +31,7 @@ const theme = {
 const IndexApp = (): JSX.Element => {
   return (
     <Grommet theme={theme}>
+      <ToastContainer />
       <React.StrictMode>
         <App />
       </React.StrictMode>
