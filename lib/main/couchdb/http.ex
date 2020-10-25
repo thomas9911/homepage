@@ -71,6 +71,21 @@ defmodule Main.CouchDB.Http do
     end
   end
 
+  def list_data(database) do
+    req_opts = [
+      query: [include_docs: true],
+      opts: [path_params: [database: database]]
+    ]
+
+    with {:ok, env} <- get("/:database/_all_docs", req_opts),
+         {:ok, data} <- extract_list_body(env) do
+      {:ok, %Context{data: data}}
+    else
+      {:error, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, error} -> {:error, error}
+    end
+  end
+
   def get_count(database, design, view, key) do
     case get("/:database/_design/:design/_view/:view/",
            query: [group: true, key: "\"#{key}\""],
@@ -101,6 +116,15 @@ defmodule Main.CouchDB.Http do
   end
 
   def extract_id_and_rev(%Tesla.Env{} = env) do
+    {:error, env}
+  end
+
+  def extract_list_body(%Tesla.Env{body: %{"rows" => rows}, status: status})
+      when status in 200..299 do
+    {:ok, Enum.map(rows, fn %{"doc" => %{"_id" => id} = doc} -> Map.put(doc, "id", id) end)}
+  end
+
+  def extract_list_body(%Tesla.Env{} = env) do
     {:error, env}
   end
 

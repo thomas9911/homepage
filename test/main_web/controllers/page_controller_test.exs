@@ -19,7 +19,7 @@ defmodule MainWeb.PageControllerTest do
 
   test "login with admin", %{conn: conn} do
     query = """
-    query login($name: String!, $password: String!) {
+    mutation login($name: String!, $password: String!) {
       login(name: $name, password: $password) {
         id
         name
@@ -77,6 +77,50 @@ defmodule MainWeb.PageControllerTest do
                   }
                 ]
               }} = Jason.decode(conn.resp_body)
+    end
+  end
+
+  describe "posts" do
+    @query """
+    query listPosts{
+      posts{
+        title
+        content
+        updatedAt
+      }
+    }
+    """
+
+    test "valid", %{conn: conn} do
+      conn = gql(conn, @query)
+
+      # assert {:ok,
+      #         %{
+      #           "data" => %{
+      #             "createUser" => %{
+      #               "name" => "admin"
+      #             }
+      #           }
+      #         }} = Jason.decode(conn.resp_body)
+      {:ok, %{"data" => %{"posts" => posts}}} = Jason.decode(conn.resp_body)
+
+      assert [
+               %{
+                 "content" => "Just some text, nice!",
+                 "title" => "Title1",
+                 "updatedAt" => _
+               },
+               %{
+                 "content" => "Just some other, nice!",
+                 "title" => "Title2",
+                 "updatedAt" => _
+               },
+               %{
+                 "content" => "Just some more text, neat!",
+                 "title" => "Title3",
+                 "updatedAt" => _
+               }
+             ] = Enum.sort_by(posts, &Map.get(&1, "title"))
     end
   end
 end

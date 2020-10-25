@@ -30,6 +30,18 @@ defmodule MainWeb.Resolvers do
     not_logged_in_error()
   end
 
+  def create_post(_, data, %{context: %{user_id: user_id, logged_in?: true}}) do
+    Main.new_post(user_id, data) |> convert_to_atoms()
+  end
+
+  def create_post(_, _, _) do
+    not_logged_in_error()
+  end
+
+  def list_posts(_, _, _) do
+    Main.list_posts() |> convert_to_atoms()
+  end
+
   def login(_, %{name: name, password: password}, _) do
     Main.login(name, password) |> convert_to_atoms()
   end

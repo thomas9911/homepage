@@ -6,6 +6,8 @@ defmodule Main.CouchDB do
   @user_design "users"
   @user_view "users"
 
+  @post_table "posts"
+
   def create_user(name, password) do
     with {:ok, ctx} <- Http.post_data(@user_table, %{"name" => name, "password" => password}),
          {:ok, unique} <- check_user_uniqueness(name),
@@ -53,6 +55,30 @@ defmodule Main.CouchDB do
     case Http.get_count(@user_table, @user_design, @user_view, name) do
       {:ok, 1} -> {:ok, true}
       {:ok, _} -> {:ok, false}
+      e -> e
+    end
+  end
+
+  # posts
+
+  def create_post(user_id, data) do
+    now = DateTime.utc_now() |> DateTime.to_iso8601()
+
+    data =
+      data
+      |> Map.put(:user, user_id)
+      |> Map.put_new(:updated_at, now)
+      |> Map.put_new(:created_at, now)
+
+    case Http.post_data(@post_table, data) do
+      {:ok, ctx} -> {:ok, ctx.data}
+      {:error, e} -> {:error, e}
+    end
+  end
+
+  def list_posts() do
+    case Http.list_data(@post_table) do
+      {:ok, ctx} -> {:ok, ctx.data}
       e -> e
     end
   end

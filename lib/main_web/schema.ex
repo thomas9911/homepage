@@ -1,6 +1,7 @@
 defmodule MainWeb.Schema do
   use Absinthe.Schema
   import_types MainWeb.Schema.User
+  import_types MainWeb.Schema.Post
 
   alias MainWeb.Resolvers
 
@@ -8,6 +9,10 @@ defmodule MainWeb.Schema do
     @desc "Get all users"
     field :users, list_of(:user) do
       resolve &Resolvers.list_users/3
+    end
+
+    field :posts, list_of(:post) do
+      resolve &Resolvers.list_posts/3
     end
   end
 

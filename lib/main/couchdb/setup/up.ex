@@ -19,17 +19,21 @@ defmodule Main.CouchDB.Setup.Up do
     language: "javascript"
   }
 
+  @data_tables Main.CouchDB.Setup.__info__(:attributes)[:data_tables]
+
   def setup do
     create_user_database()
     create_user_design()
     create_admin_user()
+    create_data_tables()
 
     :ok
   end
 
   def create_user_database do
-    print("create user database")
-    print_success(Http.create_database(@user_url))
+    # print("create user database")
+    # print_success(Http.create_database(@user_url))
+    create_table(@user_url)
   end
 
   def create_user_design do
@@ -41,6 +45,15 @@ defmodule Main.CouchDB.Setup.Up do
     print("create admin user")
     %{user: user, password: password} = admin_user_config()
     print_success(Main.new_user(user, password))
+  end
+
+  def create_data_tables do
+    Enum.each(@data_tables, &create_table/1)
+  end
+
+  defp create_table(table) do
+    print("create #{table} database")
+    print_success(Http.create_database(table))
   end
 
   defp admin_user_config() do

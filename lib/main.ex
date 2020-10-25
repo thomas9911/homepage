@@ -30,6 +30,9 @@ defmodule Main do
     end
   end
 
+  defdelegate new_post(user_id, data), to: @backend, as: :create_post
+  defdelegate list_posts(), to: @backend
+
   defp check_password(%{"password" => stored_password} = user, password) do
     valid = Argon2.verify_pass(password, stored_password)
 

@@ -63,7 +63,12 @@ defmodule Main.MixProject do
   defp aliases do
     [
       # setup: ["deps.get"]
-      test: ["setup", "test", "drop"],
+      test: [
+        "setup",
+        "run test/support/seeds.exs",
+        "test",
+        "drop"
+      ],
       graphql: [
         "absinthe.schema.sdl --schema MainWeb.Schema",
         "cmd yarn tsgql typegen",
