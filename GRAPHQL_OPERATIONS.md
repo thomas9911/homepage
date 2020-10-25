@@ -13,6 +13,23 @@ query listUsers {
 
 From [src\query.ts:3:31](src\query.ts#L3-L9)
     
+
+### Posts
+
+```graphql
+query Posts($limit: Int, $skip: Int) {
+  posts(limit: $limit, skip: $skip) {
+    id
+    title
+    content
+    updatedAt
+    createdAt
+  }
+}
+```
+
+From [src\query.ts:22:31](src\query.ts#L22-L32)
+    
 ## Mutations
 
 ### Login

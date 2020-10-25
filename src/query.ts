@@ -18,3 +18,15 @@ export const loginQuery = gql`
     }
   }
 `;
+
+export const postsQuery = gql`
+  query Posts($limit: Int, $skip: Int) {
+    posts(limit: $limit, skip: $skip) {
+      id
+      title
+      content
+      updatedAt
+      createdAt
+    }
+  }
+`;

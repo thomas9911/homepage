@@ -71,9 +71,11 @@ defmodule Main.CouchDB.Http do
     end
   end
 
-  def list_data(database) do
+  def list_data(database, opts \\ []) do
+    query = list_data_arguments(opts)
+
     req_opts = [
-      query: [include_docs: true],
+      query: query,
       opts: [path_params: [database: database]]
     ]
 
@@ -144,6 +146,12 @@ defmodule Main.CouchDB.Http do
 
   def extract_search(%Tesla.Env{} = env) do
     {:error, env}
+  end
+
+  defp list_data_arguments(opts) do
+    opts
+    |> Keyword.take([:limit, :skip])
+    |> Keyword.put(:include_docs, true)
   end
 
   defp map_ids(%{"_id" => id} = obj) do

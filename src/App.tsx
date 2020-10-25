@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 // import { usersQuery } from "./query";
 import { client } from "./client";
-import { ApolloProvider } from "@apollo/client";
-import { Box, BoxProps, Button } from "grommet";
+import { ApolloProvider, useQuery } from "@apollo/client";
+import {
+  Box,
+  BoxProps,
+  Button,
+  Heading,
+  InfiniteScroll,
+  Main,
+  Paragraph,
+} from "grommet";
 import {
   Notification,
   Home as HomeIcon,
@@ -19,33 +27,10 @@ import {
 import { Routes } from "./routes";
 import { AuthContext, sessionAuthContext, useAuthContext } from "./store";
 import { LoginPage } from "./Login";
-
-// const InnerApp = (): JSX.Element => {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// };
-
-// const LoginPage = (): JSX.Element => {
-//   return <div>
-
-//   </div>
-// }
+import { postsQuery } from "./query";
+import { List } from "immutable";
+import { Posts as TPosts } from "./apollo/types";
+import { toast } from "react-toastify";
 
 const PrivateRoute = ({
   children,
@@ -74,11 +59,12 @@ const PrivateRoute = ({
 };
 
 const AdminPage = (): JSX.Element => {
-  // const { store } = useAuthContext;
-
-  // // return <Link to={Routes.Login}>XDXDXD</Link>
-  // return  <Redirect from={Routes.Admin} to={Routes.Login} />
-  return <div>XDXD</div>;
+  return (
+    <>
+      <AppHeader />
+      <div>ADMIN PAGE</div>
+    </>
+  );
 };
 
 const AppBox = (
@@ -99,7 +85,50 @@ const AppBox = (
   );
 };
 
-const Home = (): JSX.Element => {
+const Posts = (): JSX.Element => {
+  const { loading, error, data, fetchMore } = useQuery(postsQuery, {
+    variables: { limit: 5, skip: 0 },
+  });
+
+  if (loading) return <p>Loading ...</p>;
+
+  if (error) {
+    toast.error(error.message);
+    return <div></div>;
+  } else {
+    return (
+      <InfiniteScroll
+        items={data.posts}
+        step={5}
+        onMore={() =>
+          fetchMore({
+            variables: {
+              skip: data.posts.length,
+            },
+            updateQuery: (prev: TPosts, { fetchMoreResult }) => {
+              if (!fetchMoreResult) return prev;
+              return Object.assign({}, prev, {
+                posts: [
+                  ...(prev.posts || []),
+                  ...(fetchMoreResult.posts || []),
+                ],
+              });
+            },
+          })
+        }
+      >
+        {(value: any) => (
+          <Main pad="large" key={value?.id || "1234"}>
+            <Heading level={3}>{value?.title || ""}</Heading>
+            <Paragraph margin="small">{value?.content || ""}</Paragraph>
+          </Main>
+        )}
+      </InfiniteScroll>
+    );
+  }
+};
+
+const AppHeader = (): JSX.Element => {
   return (
     <AppBox>
       <Link to={Routes.Home}>
@@ -115,6 +144,15 @@ const Home = (): JSX.Element => {
         <VmMaintenance />
       </Link>
     </AppBox>
+  );
+};
+
+const Home = (): JSX.Element => {
+  return (
+    <>
+      <AppHeader />
+      <Posts />
+    </>
   );
 };
 

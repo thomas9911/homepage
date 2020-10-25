@@ -76,8 +76,8 @@ defmodule Main.CouchDB do
     end
   end
 
-  def list_posts() do
-    case Http.list_data(@post_table) do
+  def list_posts(opts) do
+    case Http.list_data(@post_table, opts) do
       {:ok, ctx} -> {:ok, ctx.data}
       e -> e
     end

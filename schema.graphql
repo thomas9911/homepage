@@ -16,6 +16,15 @@ type Login {
   expiresAt: String
 }
 
+type Post {
+  id: ID
+  title: String
+  content: String
+  createdAt: String
+  updatedAt: String
+  tags: [String]
+}
+
 type RootMutationType {
   "Create a user"
   createUser(name: String!, password: String!): User
@@ -26,4 +35,6 @@ type RootMutationType {
 type RootQueryType {
   "Get all users"
   users: [User]
+
+  posts(limit: Int, skip: Int): [Post]
 }

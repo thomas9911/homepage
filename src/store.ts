@@ -4,13 +4,17 @@ import moment, { Moment } from "moment";
 
 const AUTH_KEY = "auth";
 
+type string_or_null = string | undefined | null;
+
 export class AuthStore {
   userId?: string;
   token?: string;
   expiry?: Moment;
-  user?: Map<string, string>;
+  user?: Map<string, string_or_null>;
 
-  constructor(input?: Map<string, string> | Record<string, string>) {
+  constructor(
+    input?: Map<string, string_or_null> | Record<string, string_or_null>
+  ) {
     if (input) {
       const mapInput =
         input instanceof Map

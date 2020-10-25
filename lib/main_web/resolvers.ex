@@ -19,11 +19,10 @@ defmodule MainWeb.Resolvers do
          "name" => "bye"
        }
      ]}
-    |> convert_to_atoms()
   end
 
   def create_user(_, %{name: name, password: password}, %{context: %{logged_in?: true}}) do
-    Main.new_user(name, password) |> convert_to_atoms()
+    Main.new_user(name, password)
   end
 
   def create_user(_, _, _) do
@@ -31,40 +30,27 @@ defmodule MainWeb.Resolvers do
   end
 
   def create_post(_, data, %{context: %{user_id: user_id, logged_in?: true}}) do
-    Main.new_post(user_id, data) |> convert_to_atoms()
+    Main.new_post(user_id, data)
   end
 
   def create_post(_, _, _) do
     not_logged_in_error()
   end
 
-  def list_posts(_, _, _) do
-    Main.list_posts() |> convert_to_atoms()
+  def list_posts(_, args, _) do
+    args
+    |> validate_list_arguments()
+    |> Main.list_posts()
   end
 
   def login(_, %{name: name, password: password}, _) do
-    Main.login(name, password) |> convert_to_atoms()
+    Main.login(name, password)
   end
 
-  def convert_to_atoms({:ok, item}) do
-    {:ok, convert_to_atoms(item)}
-  end
+  defp validate_list_arguments(args) do
+    limit = args |> Map.get(:limit, 50) |> max(1) |> min(200)
+    skip = args |> Map.get(:skip, 0) |> max(0)
 
-  def convert_to_atoms({:error, _} = item), do: item
-
-  def convert_to_atoms(list) when is_list(list) do
-    Enum.map(list, &convert_to_atoms/1)
-  end
-
-  def convert_to_atoms(map) when is_map(map) do
-    Map.new(map, fn {k, v} -> {safe_atom_to_string(k), convert_to_atoms(v)} end)
-  end
-
-  def convert_to_atoms(any), do: any
-
-  defp safe_atom_to_string(str) do
-    String.to_existing_atom(str)
-  rescue
-    ArgumentError -> str
+    [skip: skip, limit: limit]
   end
 end
