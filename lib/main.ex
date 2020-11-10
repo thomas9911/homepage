@@ -31,6 +31,7 @@ defmodule Main do
   end
 
   defdelegate new_post(user_id, data), to: @backend, as: :create_post
+  defdelegate delete_post(post_id), to: @backend
   defdelegate list_posts(opts \\ []), to: @backend
 
   defp check_password(%{"password" => stored_password} = user, password) do

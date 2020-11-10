@@ -76,6 +76,18 @@ defmodule Main.CouchDB do
     end
   end
 
+  def delete_post(post_id) do
+    with {:ok, ctx} <- Http.head_item(@post_table, post_id),
+         {:ok, env} <- Http.delete_item(@post_table, post_id, ctx.rev) do
+      {:ok, wrap_delete(env.id)}
+    else
+      {:error, nil} -> {:ok, wrap_delete(post_id)}
+      {:error, e} -> {:error, e}
+    end
+  end
+
+  defp wrap_delete(id), do: %{"id" => id}
+
   def list_posts(opts) do
     case Http.list_data(@post_table, opts) do
       {:ok, ctx} -> {:ok, ctx.data}

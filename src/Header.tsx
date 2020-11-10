@@ -34,7 +34,13 @@ export const Header = (): JSX.Element => {
       <Link to={Routes.Home}>
         <HomeIcon />
       </Link>
-      <Button icon={<Notification />} onClick={() => {}} />
+      <Button
+        icon={<Notification />}
+        onClick={
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          (): void => {}
+        }
+      />
       <Button></Button>
       <Link to={Routes.Graphql}>
         <GraphQlIcon />

@@ -91,17 +91,27 @@ defmodule MainWeb.PageControllerTest do
     }
     """
 
+    @create_mutation """
+    mutation createPost($title: String!, $content: String!){
+      createPost(title: $title, content: $content){
+        id
+        content
+        title
+        createdAt
+      }
+    }
+    """
+
+    @delete_mutation """
+    mutation deletePost($id: ID!){
+      deletePost(id: $id){
+        id
+      }
+    }
+    """
+
     test "valid", %{conn: conn} do
       conn = gql(conn, @query)
-
-      # assert {:ok,
-      #         %{
-      #           "data" => %{
-      #             "createUser" => %{
-      #               "name" => "admin"
-      #             }
-      #           }
-      #         }} = Jason.decode(conn.resp_body)
       {:ok, %{"data" => %{"posts" => posts}}} = Jason.decode(conn.resp_body)
 
       assert [
@@ -121,6 +131,23 @@ defmodule MainWeb.PageControllerTest do
                  "updatedAt" => _
                }
              ] = Enum.sort_by(posts, &Map.get(&1, "title"))
+    end
+
+    test "create post and delete it", %{conn: conn, token: token} do
+      conn = gql(conn, @create_mutation, %{title: "Nice title", content: "Just some text"}, token)
+      {:ok, %{"data" => %{"createPost" => post}}} = Jason.decode(conn.resp_body)
+
+      assert %{
+               "id" => id,
+               "title" => "Nice title",
+               "content" => "Just some text",
+               "createdAt" => _
+             } = post
+
+      conn = recycle(conn)
+
+      conn = gql(conn, @delete_mutation, %{id: id}, token)
+      {:ok, %{"data" => %{"deletePost" => %{"id" => _}}}} = Jason.decode(conn.resp_body)
     end
   end
 end

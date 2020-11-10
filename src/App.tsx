@@ -19,7 +19,8 @@ import { Posts } from "./Posts";
 const PrivateRoute = ({
   children,
   ...rest
-}: Record<string, any>): JSX.Element => {
+}: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+Record<string, any>): JSX.Element => {
   const { store } = useAuthContext();
 
   return (
@@ -51,7 +52,7 @@ const Home = (): JSX.Element => {
   );
 };
 
-const MainSwitch = (props: any): JSX.Element => {
+const MainSwitch = (): JSX.Element => {
   return (
     <Switch>
       {/* <Route path="/about">

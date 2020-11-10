@@ -37,6 +37,14 @@ defmodule MainWeb.Resolvers do
     not_logged_in_error()
   end
 
+  def delete_post(_, %{id: post_id}, %{context: %{user_id: _user_id, logged_in?: true}}) do
+    Main.delete_post(post_id)
+  end
+
+  def delete_post(_, _, _) do
+    not_logged_in_error()
+  end
+
   def list_posts(_, args, _) do
     args
     |> validate_list_arguments()

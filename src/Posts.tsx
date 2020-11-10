@@ -13,37 +13,48 @@ export const Posts = (): JSX.Element => {
 
   if (loading) return <p>Loading ...</p>;
 
+  const typedData: TPosts = data;
+  const posts = typedData.posts || [];
+
   if (error) {
     toast.error(error.message);
     return <div></div>;
   } else {
     return (
       <InfiniteScroll
-        items={data.posts}
+        items={posts}
         step={5}
-        onMore={() =>
+        onMore={(): void => {
           fetchMore({
             variables: {
-              skip: data.posts.length,
+              skip: posts.length,
             },
-            updateQuery: (prev: TPosts, { fetchMoreResult }) => {
-              if (!fetchMoreResult) return prev;
-              return Object.assign({}, prev, {
-                posts: [
-                  ...(prev.posts || []),
-                  ...(fetchMoreResult.posts || []),
-                ],
-              });
-            },
-          })
-        }
+            // updateQuery: (prev: TPosts, { fetchMoreResult }) => {
+            //   if (!fetchMoreResult) return prev;
+            //   return Object.assign({}, prev, {
+            //     posts: [
+            //       ...(prev.posts || []),
+            //       ...(fetchMoreResult.posts || []),
+            //     ],
+            //   });
+            // },
+          });
+        }}
       >
-        {(value: any) => (
-          <Main pad="large" key={value?.id || "1234"}>
-            <Heading level={3}>{value?.title || ""}</Heading>
-            <Paragraph margin="small">{value?.content || ""}</Paragraph>
-          </Main>
-        )}
+        {(value: unknown): JSX.Element => {
+          const { id = "1234", title = "", content = "" } = value as {
+            id: string;
+            title: string;
+            content: string;
+          };
+
+          return (
+            <Main pad="large" key={id}>
+              <Heading level={3}>{title}</Heading>
+              <Paragraph margin="small">{content}</Paragraph>
+            </Main>
+          );
+        }}
       </InfiniteScroll>
     );
   }

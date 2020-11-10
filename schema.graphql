@@ -29,12 +29,22 @@ type RootMutationType {
   "Create a user"
   createUser(name: String!, password: String!): User
 
+  "Create a post"
+  createPost(title: String!, content: String!): Post
+
+  "Delete a post"
+  deletePost(id: ID!): IdItem
+
   login(name: String!, password: String!): Login
+}
+
+type IdItem {
+  id: ID
 }
 
 type RootQueryType {
   "Get all users"
   users: [User]
 
-  posts(limit: Int, skip: Int): [Post]
+  posts(limit: Int, skip: Int): [Post!]
 }

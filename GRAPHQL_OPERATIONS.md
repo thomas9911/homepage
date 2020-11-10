@@ -60,5 +60,18 @@ mutation Login($name: String!, $password: String!) {
 
 From [src\query.ts:19:31](src\query.ts#L19-L28)
     
+
+### NewPost
+
+```graphql
+mutation NewPost($title: String!, $content: String!) {
+  createPost(title: $title, content: $content) {
+    title
+  }
+}
+```
+
+From [src\query.ts:42:31](src\query.ts#L42-L48)
+    
 ---
 Extracted by [ts-graphql-plugin](https://github.com/Quramy/ts-graphql-plugin)

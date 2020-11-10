@@ -8,9 +8,9 @@ import {
   Login as LoginReturn,
 } from "./apollo/types";
 import { AuthStore, saveSessionAuthContext, useAuthContext } from "./store";
-import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { History } from "history";
+import { errorToast } from "./toasters";
 
 type UpdateAuthContext = React.Dispatch<React.SetStateAction<AuthStore>>;
 
@@ -22,7 +22,7 @@ interface UserForm {
 const updateAuthStore = (
   { login }: LoginReturn,
   updateStore: UpdateAuthContext
-) => {
+): void => {
   if (login?.valid) {
     const updatedStorage = new AuthStore({
       userId: login?.id,
@@ -42,7 +42,7 @@ const loginSubmit = (
   doLogin: apolloMutationFunction,
   updateStore: UpdateAuthContext,
   history: History<unknown>
-) => {
+): void => {
   const { name = "", password = "" } = value;
   const variables: LoginVariables = { name, password };
   doLogin({ variables })
@@ -53,17 +53,6 @@ const loginSubmit = (
       history.goBack();
     })
     .catch((e) => errorToast(e));
-};
-
-const errorToast = (e: Error) => {
-  toast.error(e.message, {
-    position: "top-right",
-    autoClose: 5000,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
 };
 
 const InnerLoginPage = (): JSX.Element => {
@@ -80,9 +69,11 @@ const InnerLoginPage = (): JSX.Element => {
     >
       <Form
         value={value}
-        onChange={(nextValue) => setValue(nextValue as any)}
+        onChange={(nextValue): void =>
+          setValue(nextValue as React.SetStateAction<UserForm>)
+        }
         // onReset={() => setValue({})}
-        onSubmit={({ value }) =>
+        onSubmit={({ value }): void =>
           loginSubmit(value as UserForm, doLogin, updateStore, history)
         }
       >

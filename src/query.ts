@@ -38,3 +38,11 @@ export const postsQuery = gql`
     }
   }
 `;
+
+export const createPost = gql`
+  mutation NewPost($title: String!, $content: String!) {
+    createPost(title: $title, content: $content) {
+      title
+    }
+  }
+`;

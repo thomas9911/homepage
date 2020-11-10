@@ -98,8 +98,30 @@ defmodule Main.CouchDB.Http do
     end
   end
 
+  def head_item(database, id) do
+    with {:ok, %Tesla.Env{headers: headers, status: status}} when status in 200..299 <-
+           head("/:database/:id", opts: [path_params: [database: database, id: id]]),
+         {"etag", etag} <- List.keyfind(headers, "etag", 0, {:error, "etag not found"}),
+         {:ok, rev} <- Jason.decode(etag) do
+      {:ok, %Context{id: id, rev: rev}}
+    else
+      {_, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, error} -> {:error, error}
+    end
+  end
+
   def delete_item(database, id, rev) do
-    delete("/:database/:id", query: [rev: rev], opts: [path_params: [database: database, id: id]])
+    with {:ok, env} <-
+           delete("/:database/:id",
+             query: [rev: rev],
+             opts: [path_params: [database: database, id: id]]
+           ),
+         {:ok, ctx} <- extract_id_and_rev(env) do
+      {:ok, ctx}
+    else
+      {:error, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, error} -> {:error, error}
+    end
   end
 
   def search(database, filter, limit \\ 25) do
@@ -114,7 +136,7 @@ defmodule Main.CouchDB.Http do
   # helpers
 
   def extract_id_and_rev(%Tesla.Env{body: %{"ok" => true, "id" => id, "rev" => rev}}) do
-    {:ok, %{id: id, rev: rev}}
+    {:ok, %Context{id: id, rev: rev}}
   end
 
   def extract_id_and_rev(%Tesla.Env{} = env) do
