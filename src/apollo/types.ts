@@ -1,5 +1,6 @@
 import { MutationFunctionOptions, FetchResult } from "@apollo/client";
 export * from "../__generated__/list-users";
+export * from "../__generated__/new-user";
 export * from "../__generated__/login";
 export * from "../__generated__/posts";
 

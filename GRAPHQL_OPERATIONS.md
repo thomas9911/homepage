@@ -1,10 +1,10 @@
 # Extracted GraphQL Operations
 ## Queries
 
-### listUsers
+### ListUsers
 
 ```graphql
-query listUsers {
+query ListUsers {
   users {
     name
   }
@@ -28,9 +28,22 @@ query Posts($limit: Int, $skip: Int) {
 }
 ```
 
-From [src\query.ts:22:31](src\query.ts#L22-L32)
+From [src\query.ts:30:31](src\query.ts#L30-L40)
     
 ## Mutations
+
+### NewUser
+
+```graphql
+mutation NewUser($username: String!, $password: String!) {
+  createUser(name: $username, password: $password) {
+    name
+  }
+}
+```
+
+From [src\query.ts:11:31](src\query.ts#L11-L17)
+    
 
 ### Login
 
@@ -45,7 +58,7 @@ mutation Login($name: String!, $password: String!) {
 }
 ```
 
-From [src\query.ts:11:31](src\query.ts#L11-L20)
+From [src\query.ts:19:31](src\query.ts#L19-L28)
     
 ---
 Extracted by [ts-graphql-plugin](https://github.com/Quramy/ts-graphql-plugin)
