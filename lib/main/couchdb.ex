@@ -7,6 +7,8 @@ defmodule Main.CouchDB do
   @user_view "users"
 
   @post_table "posts"
+  @post_design "posts"
+  @post_view "posts"
 
   def create_user(name, password) do
     with {:ok, ctx} <- Http.post_data(@user_table, %{"name" => name, "password" => password}),
@@ -89,7 +91,9 @@ defmodule Main.CouchDB do
   defp wrap_delete(id), do: %{"id" => id}
 
   def list_posts(opts) do
-    case Http.list_data(@post_table, opts) do
+    opts = Keyword.merge([descending: true], opts)
+
+    case Http.list_data_from_view(@post_table, @post_design, @post_view, opts) do
       {:ok, ctx} -> {:ok, ctx.data}
       e -> e
     end

@@ -18,6 +18,17 @@ defmodule Main.CouchDB.Setup.Up do
     },
     language: "javascript"
   }
+  @post_design_url "/posts/_design/posts"
+  @post_design %{
+    _id: "_design/posts",
+    views: %{
+      posts: %{
+        map:
+          "function (doc) {\n  emit([doc.updated_at || \"z\", doc.created_at || \"z\"], null);\n}"
+      }
+    },
+    language: "javascript"
+  }
 
   @data_tables Main.CouchDB.Setup.__info__(:attributes)[:data_tables]
 
@@ -26,6 +37,7 @@ defmodule Main.CouchDB.Setup.Up do
     create_user_design()
     create_admin_user()
     create_data_tables()
+    create_post_design()
 
     :ok
   end
@@ -39,6 +51,11 @@ defmodule Main.CouchDB.Setup.Up do
   def create_user_design do
     print("create user design")
     print_success(Http.put(@user_design_url, @user_design))
+  end
+
+  def create_post_design do
+    print("create post design")
+    print_success(Http.put(@post_design_url, @post_design))
   end
 
   def create_admin_user do

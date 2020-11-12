@@ -2,24 +2,24 @@ import React from "react";
 
 import { useQuery } from "@apollo/client";
 import { postsQuery } from "./query";
-import { toast } from "react-toastify";
 import { Heading, InfiniteScroll, Main, Paragraph } from "grommet";
 import { Posts as TPosts } from "./apollo/types";
+import { errorToast } from "./toasters";
 
 export const Posts = (): JSX.Element => {
   const { loading, error, data, fetchMore } = useQuery(postsQuery, {
     variables: { limit: 5, skip: 0 },
   });
 
-  if (loading) return <p>Loading ...</p>;
-
-  const typedData: TPosts = data;
-  const posts = typedData.posts || [];
+  if (loading) return <Paragraph margin="large">Loading ...</Paragraph>;
 
   if (error) {
-    toast.error(error.message);
-    return <div></div>;
+    errorToast(error);
+    return <Paragraph margin="large">Failed to load Posts</Paragraph>;
   } else {
+    const typedData: TPosts = data;
+    const posts = typedData.posts || [];
+
     return (
       <InfiniteScroll
         items={posts}

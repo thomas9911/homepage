@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, BoxProps, Button } from "grommet";
+import { BoxProps, Button, Nav } from "grommet";
 
 import {
   Notification,
@@ -17,7 +17,7 @@ const AppBox = (
     React.HTMLAttributes<HTMLDivElement>
 ): JSX.Element => {
   return (
-    <Box
+    <Nav
       direction="row"
       justify="between"
       align="center"

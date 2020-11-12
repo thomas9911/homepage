@@ -116,8 +116,8 @@ defmodule MainWeb.PageControllerTest do
 
       assert [
                %{
-                 "content" => "Just some text, nice!",
-                 "title" => "Title1",
+                 "content" => "Just some more text, neat!",
+                 "title" => "Title3",
                  "updatedAt" => _
                },
                %{
@@ -126,11 +126,11 @@ defmodule MainWeb.PageControllerTest do
                  "updatedAt" => _
                },
                %{
-                 "content" => "Just some more text, neat!",
-                 "title" => "Title3",
+                 "content" => "Just some text, nice!",
+                 "title" => "Title1",
                  "updatedAt" => _
                }
-             ] = Enum.sort_by(posts, &Map.get(&1, "title"))
+             ] = posts
     end
 
     test "create post and delete it", %{conn: conn, token: token} do

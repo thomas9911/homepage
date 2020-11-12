@@ -88,6 +88,23 @@ defmodule Main.CouchDB.Http do
     end
   end
 
+  def list_data_from_view(database, design, view, opts \\ []) do
+    query = list_data_arguments(opts)
+
+    req_opts = [
+      query: query,
+      opts: [path_params: [database: database, design: design, view: view]]
+    ]
+
+    with {:ok, env} <- get("/:database/_design/:design/_view/:view", req_opts),
+         {:ok, data} <- extract_list_body(env) do
+      {:ok, %Context{data: data}}
+    else
+      {:error, %Tesla.Env{body: body}} -> {:error, body}
+      {:error, error} -> {:error, error}
+    end
+  end
+
   def get_count(database, design, view, key) do
     case get("/:database/_design/:design/_view/:view/",
            query: [group: true, key: "\"#{key}\""],
@@ -172,7 +189,7 @@ defmodule Main.CouchDB.Http do
 
   defp list_data_arguments(opts) do
     opts
-    |> Keyword.take([:limit, :skip])
+    |> Keyword.take([:limit, :skip, :descending])
     |> Keyword.put(:include_docs, true)
   end
 
