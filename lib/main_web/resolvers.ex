@@ -1,4 +1,7 @@
 defmodule MainWeb.Resolvers do
+  require Main.Validation
+  import Main.Validation
+
   def not_logged_in_error do
     {:error, "not logged in"}
   end
@@ -49,6 +52,14 @@ defmodule MainWeb.Resolvers do
     args
     |> validate_list_arguments()
     |> Main.list_posts()
+  end
+
+  def get_post(_, %{id: post_id}, _) when is_uuid(post_id) do
+    Main.get_post(post_id)
+  end
+
+  def get_post(_, _, _) do
+    {:error, "Invalid post id"}
   end
 
   def login(_, %{name: name, password: password}, _) do

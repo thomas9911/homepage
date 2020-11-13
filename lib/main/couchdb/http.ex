@@ -9,7 +9,7 @@ defmodule Main.CouchDB.Http do
   plug Tesla.Middleware.JSON
 
   @doc """
-  Creates a new database
+  Fetches the database
   """
   def get_database(database) do
     case validate_input(database) do
@@ -18,6 +18,9 @@ defmodule Main.CouchDB.Http do
     end
   end
 
+  @doc """
+  Creates a new database
+  """
   def create_database(database) do
     case validate_input(database) do
       {:ok, database} -> put("/:database", %{}, opts: [path_params: [database: database]])
@@ -25,6 +28,9 @@ defmodule Main.CouchDB.Http do
     end
   end
 
+  @doc """
+  Deletes the database with all (design) documents and views
+  """
   def delete_database(database) do
     case validate_input(database) do
       {:ok, database} -> delete("/:database", opts: [path_params: [database: database]])

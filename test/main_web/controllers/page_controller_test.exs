@@ -1,6 +1,8 @@
 defmodule MainWeb.PageControllerTest do
   use MainWeb.ConnCase
 
+  @post_id "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
   # alias MainWeb.TestHelpers
   setup_all do
     with {:ok, [user]} <- Main.get_user_by_name("admin"),
@@ -81,9 +83,19 @@ defmodule MainWeb.PageControllerTest do
   end
 
   describe "posts" do
-    @query """
+    @list_query """
     query listPosts{
       posts{
+        title
+        content
+        updatedAt
+      }
+    }
+    """
+
+    @get_query """
+    query getPost($id: ID!){
+      post(id: $id){
         title
         content
         updatedAt
@@ -110,8 +122,8 @@ defmodule MainWeb.PageControllerTest do
     }
     """
 
-    test "valid", %{conn: conn} do
-      conn = gql(conn, @query)
+    test "list", %{conn: conn} do
+      conn = gql(conn, @list_query)
       {:ok, %{"data" => %{"posts" => posts}}} = Jason.decode(conn.resp_body)
 
       assert [
@@ -131,6 +143,29 @@ defmodule MainWeb.PageControllerTest do
                  "updatedAt" => _
                }
              ] = posts
+    end
+
+    test "get, valid", %{conn: conn} do
+      conn = gql(conn, @get_query, %{id: @post_id})
+      {:ok, %{"data" => %{"post" => post}}} = Jason.decode(conn.resp_body)
+
+      %{
+        "content" => "Just some other, nice!",
+        "title" => "Title2",
+        "updatedAt" => _
+      } = post
+    end
+
+    test "get, not existing", %{conn: conn} do
+      conn = gql(conn, @get_query, %{id: "11111111111111111111111111111111"})
+      assert {:ok, %{"errors" => [%{"message" => "Not found"}]}} = Jason.decode(conn.resp_body)
+    end
+
+    test "get, invalid id", %{conn: conn} do
+      conn = gql(conn, @get_query, %{id: "testing"})
+
+      assert {:ok, %{"errors" => [%{"message" => "Invalid post id"}]}} =
+               Jason.decode(conn.resp_body)
     end
 
     test "create post and delete it", %{conn: conn, token: token} do

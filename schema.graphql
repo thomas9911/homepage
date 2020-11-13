@@ -46,5 +46,8 @@ type RootQueryType {
   "Get all users"
   users: [User]
 
+  "Get all posts"
   posts(limit: Int, skip: Int): [Post!]
+
+  post(id: ID): Post!
 }

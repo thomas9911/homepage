@@ -98,6 +98,13 @@ defmodule Main.CouchDB do
       e -> e
     end
   end
+
+  def get_post(id) do
+    case Http.get_data(@post_table, id) do
+      {:ok, ctx} -> {:ok, ctx.data}
+      e -> e
+    end
+  end
 end
 
 # Main.CouchDB.Http.get("/users/_design/users/_view/users/", query: [group: true, key: "\"XD\""])

@@ -6,6 +6,7 @@ import * as serviceWorker from "./serviceWorker";
 import { Grommet } from "grommet";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const theme = {
   global: {
     colors: {

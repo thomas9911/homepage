@@ -5,11 +5,11 @@ defmodule MainWeb.Schema do
   import_types MainWeb.Schema.User
   import_types MainWeb.Schema.Post
 
-  alias MainWeb.Middlewares.StringToAtom
+  alias MainWeb.Middlewares.{MapToError, StringToAtom}
   alias MainWeb.Resolvers
 
   def middleware(middleware, _field, _object) do
-    middleware ++ [StringToAtom]
+    middleware ++ [StringToAtom, MapToError]
   end
 
   query do
@@ -18,11 +18,18 @@ defmodule MainWeb.Schema do
       resolve &Resolvers.list_users/3
     end
 
+    @desc "Get all posts"
     field :posts, list_of(non_null(:post)) do
       arg :limit, :integer
       arg :skip, :integer
 
       resolve &Resolvers.list_posts/3
+    end
+
+    field :post, non_null(:post) do
+      arg :id, :id
+
+      resolve &Resolvers.get_post/3
     end
   end
 

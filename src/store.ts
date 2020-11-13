@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import { Map } from "immutable";
-import moment, { Moment } from "moment";
+// import moment, { Moment } from "moment";
+import { DateTime } from "luxon";
 
 const AUTH_KEY = "auth";
 
@@ -9,7 +10,7 @@ type stringOrNull = string | undefined | null;
 export class AuthStore {
   userId?: string;
   token?: string;
-  expiry?: Moment;
+  expiry?: DateTime;
   user?: Map<string, stringOrNull>;
 
   constructor(
@@ -23,7 +24,9 @@ export class AuthStore {
 
       this.userId = mapInput.get("userId");
       this.token = mapInput.get("token");
-      this.expiry = moment(mapInput.get("expiry"));
+      this.expiry = DateTime.fromISO(
+        mapInput.get("expiry") || "1970-01-01T:00:00:00Z"
+      );
       this.user = mapInput;
     }
   }
@@ -38,7 +41,11 @@ export class AuthStore {
 
   isExpired(): boolean {
     if (this.expiry) {
-      return this.expiry.isBefore(moment());
+      // return this.expiry.isBefore(moment());
+      // return Interval.fromDateTimes(this.expiry).isBefore()
+      return DateTime.fromISO("1970-01-01T00:00:00Z")
+        .until(this.expiry)
+        .isBefore(DateTime.utc());
     }
 
     return true;

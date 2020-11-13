@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BoxProps, Button, Nav } from "grommet";
+import { Anchor, BoxProps, Button, Nav } from "grommet";
+import { url } from "./config.json";
 
 import {
   Notification,
@@ -42,11 +43,11 @@ export const Header = (): JSX.Element => {
         }
       />
       <Button></Button>
-      <Link to={Routes.Graphql}>
+      {/* <Link to={Routes.Graphql}>
         <GraphQlIcon />
-      </Link>
+      </Link> */}
+      <Anchor href={url} icon={<GraphQlIcon />} />
       <Link to={Routes.Admin}>
-        {/* <Link to="https://google.com"> */}
         <VmMaintenance />
       </Link>
     </AppBox>
